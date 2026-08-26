@@ -146,21 +146,34 @@ export const SERVICES: Service[] = [
      * Three points, not four. The Detail grid is md:grid-cols-3 and a fourth
      * would sit alone on a second row, so the inherited material folds into
      * the intro and into point 03 instead of adding a card.
+     *
+     * 2026-08-25, at the client's request: the UV-protection card is gone and
+     * Lower monthly bills has the slot. The two were competing for the same
+     * reader anyway — one named a benefit he had not asked to be sold, the
+     * other names the one he had. Point 01 gave up its "the saving continues"
+     * tail in the same edit so the two cards are not both about the bill.
+     * The UV sentence is deleted outright, not parked: it was the client's own
+     * wording and he asked for it off the page.
+     *
+     * The hero is the retired Hurricane Protection photograph, restored on
+     * 2026-08-25 because the client judged it the better frame — it shows a
+     * wall of impact sliders on a South Florida elevation, where B99x2rnPTGk
+     * showed a dusk interior with the glass barely legible.
      */
     title: "Impact Windows & Doors, Hurricane Rated | South Florida",
     description:
-      "Hurricane-rated impact windows and doors: energy efficiency, UV protection and year-round security. Financing available. Licensed Miami-Dade contractor.",
+      "Hurricane-rated impact windows and doors: energy efficiency, lower monthly bills and year-round security. Financing available. Licensed Miami-Dade contractor.",
     summary: "Hurricane rated, energy efficient, quiet all year.",
     intro:
-      "Impact windows and doors do several jobs at once in South Florida: they are engineered to withstand hurricane-force debris and pressure, they cut solar heat gain, they block the UV that fades your interior, and laminated impact glass measurably dampens street and aircraft noise. Living in Florida demands adequate protection for your home — and this is protection that works every day of the year, not only during the season.",
+      "Impact windows and doors do several jobs at once in South Florida: they are engineered to withstand hurricane-force debris and pressure, they cut the solar heat gain that the air conditioning has to work against, and laminated impact glass measurably dampens street and aircraft noise. Living in Florida demands adequate protection for your home — and this is protection that works every day of the year, not only during the season.",
     points: [
       {
         title: "Energy efficiency",
-        body: "Impact windows are engineered to minimize solar heat gain during summer and retain warmth inside your home during colder seasons. Reduced heat transfer means the system works less to hold temperature, and the saving continues long after installation.",
+        body: "Impact windows are engineered to minimize solar heat gain during summer and retain warmth inside your home during colder seasons. Reduced heat transfer means a room that holds its temperature instead of fighting the sun through the glass.",
       },
       {
-        title: "UV protection",
-        body: "Impact glass shields your valuables from fading and discoloration caused by prolonged exposure to direct sunlight — especially crucial in Florida, where direct sunlight is prevalent throughout the year.",
+        title: "Lower monthly bills",
+        body: "Cooling runs almost year-round in South Florida, and the glass is where most of the heat gets in. Stopping it at the window rather than after it means the system cycles less to hold the same temperature — a saving that lands on the bill every month, not once at installation.",
       },
       {
         title: "Storm-rated security",
@@ -262,9 +275,24 @@ export const SERVICES: Service[] = [
         title: "Concrete",
         body: "A durable and versatile material that allows the pool to be shaped to the site rather than the site to the pool.",
       },
-      { title: "Custom design", body: "Drawn around your garden, your access and your budget from the first sketch." },
+      {
+        title: "Custom design",
+        body: "Drawn around your garden, your access and your budget from the first sketch — including a vanishing edge where the ground falls away and the site will carry one.",
+      },
       { title: "Built to last", body: "Premium materials and current construction technique, for longevity in Florida conditions." },
     ],
+    /**
+     * Both photographs replaced 2026-08-25. The client asked for an infinity
+     * pool and said it is the main event, so the hero is a vanishing edge over
+     * a bay and the plate is a still infinity pool at first light. What was
+     * there before — a freeform pool with a spa and a fence, and a kidney pool
+     * in front of a gabled house — was not what this page is selling.
+     *
+     * Custom design gained the vanishing-edge clause in the same round, so the
+     * page says what the photograph shows. It is hedged on purpose: an infinity
+     * edge needs a fall across the site, and promising one on flat ground is a
+     * promise the crew would have to break.
+     */
     hero: "/atmosphere/hero-pool.webp",
     category: "outdoor",
     legacyPath: "/pool/",
@@ -286,7 +314,7 @@ export const SERVICES: Service[] = [
       "Low-maintenance artificial grass installed for yards, roofs, patios and decks. Water-free, safe for kids and pets. Licensed, insured, background-checked installers.",
     summary: "Water-free, low-maintenance, safe for kids and pets.",
     intro:
-      "Artificial grass installation involves preparing the area, laying the base and installing the turf — a low-maintenance alternative to natural grass that stays green without water.",
+      "Artificial grass installation involves preparing the area, laying the base and installing the turf — a low-maintenance alternative to natural grass that stays green without water. It is also a standing cost taken off the household budget: nothing to irrigate, nothing to mow and nothing to feed, so the lawn stops adding to the monthly bills and holds the same color straight through the dry season.",
     points: [
       {
         title: "Low maintenance",
@@ -299,11 +327,18 @@ export const SERVICES: Service[] = [
       { title: "Supporting local pros", body: "The crews on your job are local trades, not a subcontracted traveling team." },
     ],
     /**
-     * Both photographs replaced 2026-08-19. Same paths, new files: the pair
-     * in place before showed a pool ladder and a house elevation with a lawn
-     * somewhere in shot, so the page selling grass led with everything except
-     * grass. The client asked to see the surface itself, and both frames are
-     * now lawn-dominant.
+     * Both photographs replaced again on 2026-08-25, same paths. The 08-19 pair
+     * was lawn-dominant and still not right: the hero carried a swimming pool
+     * along its right edge and the showcase plate was a house elevation with a
+     * lawn in front of it. The client's note was blunt and correct — the turf
+     * is what this page sells, so it has to be the thing you see. The hero is
+     * now a lawn filling the frame with no pool and no elevation in it, and the
+     * plate is the surface itself, laid to a gravel edge against paving.
+     *
+     * The intro gained the running-cost line in the same round. It says the
+     * lawn stops adding to the monthly bills and leaves the arithmetic — no
+     * irrigation, no mowing, no feed — to do the arguing. No figure is quoted,
+     * because we have no costing from the client to quote one from.
      */
     hero: "/atmosphere/hero-artificial-turf.webp",
     category: "outdoor",
@@ -320,6 +355,15 @@ export const SERVICES: Service[] = [
      * Copy here is deliberately descriptive of scope only. No warranties, no
      * specifications, no pricing — none of that exists in client material.
      *
+     * Pools joined the page on 2026-08-25 at the client's request, in both the
+     * Overview and the Detail grid. It took the slot held by "Full outdoor
+     * renovation", which had been restating the intro rather than adding to it,
+     * so the grid is still three cards and still one row. /services/pool keeps
+     * the keyword — it stays out of this page's <title> and out of first
+     * position in its meta description — because the two pages answer different
+     * questions: that one is "build me a pool", this one is "build me the
+     * whole back of the house, pool included".
+     *
      * Photography is licensed atmosphere already in the repo (see
      * public/atmosphere/CREDITS.json and public/showcase/CREDITS.json); no new
      * licence was taken for this page.
@@ -328,11 +372,15 @@ export const SERVICES: Service[] = [
     name: "Outdoor Living Renovation",
     title: "Outdoor Kitchens, Pergolas & Outdoor Living | Miami",
     description:
-      "Outdoor kitchens, pergolas and full outdoor living renovation for South Florida homes, built by a licensed general contractor. Free estimates, financing available.",
-    summary: "Outdoor kitchens, pergolas and full outdoor renovation.",
+      "Outdoor kitchens, pergolas, pools and full outdoor living renovation for South Florida homes, built by a licensed general contractor. Free estimates, financing available.",
+    summary: "Outdoor kitchens, pergolas, pools and full outdoor renovation.",
     intro:
-      "An outdoor kitchen, a pergola and the ground between them are one project, not three. We design and build the whole outdoor living space under a single contract, so the paving, the structures, the services and the finishes are planned together and installed by one crew.",
+      "A pool, an outdoor kitchen, a pergola and the ground between them are one project, not four. We design and build the whole outdoor living space under a single contract, so the pool shell and its plumbing, the paving, the structures, the services and the finishes are planned together and installed by one crew — and the pool is set into the space it belongs to rather than dropped into a garden that then has to be rebuilt around it.",
     points: [
+      {
+        title: "Pools",
+        body: "A custom pool shaped to the plot rather than picked from a catalogue, with the shell, the decking, the coping and the equipment scoped alongside the paving and the structures instead of after them.",
+      },
       {
         title: "Outdoor kitchens",
         body: "Counter, cooking and storage built into the space, with the plumbing and electrical work planned in from the start rather than added afterwards.",
@@ -340,10 +388,6 @@ export const SERVICES: Service[] = [
       {
         title: "Pergolas",
         body: "A shade structure sized and sited for the way you actually use the garden, permitted and built as part of the same job.",
-      },
-      {
-        title: "Full outdoor renovation",
-        body: "Pool, turf, paving, planting and structures scoped together — one contractor, one schedule, one point of contact.",
       },
     ],
     /**

@@ -39,25 +39,25 @@
     },
     {
       "file": "/showcase/pool.webp",
-      "use": "Pool — water clearly the subject",
-      "unsplashId": "K7aApdbJZcQ",
-      "photographer": "Oak + Motion",
-      "photographerUrl": "https://unsplash.com/@oakandmotion",
-      "photoUrl": "https://unsplash.com/photos/a-pool-surrounded-by-palm-trees-and-landscaping-K7aApdbJZcQ",
-      "width": 5472,
-      "height": 3648,
-      "alt": "a pool surrounded by palm trees and landscaping"
+      "use": "Pool — the vanishing edge is the subject. Replaced K7aApdbJZcQ on 2026-08-25, which showed a freeform pool with a house and palms behind it.",
+      "unsplashId": "qziTnvkaTIo",
+      "photographer": "Dane M",
+      "photographerUrl": "https://unsplash.com/@danemili",
+      "photoUrl": "https://unsplash.com/photos/a-large-swimming-pool-with-a-view-of-the-ocean-qziTnvkaTIo",
+      "width": 12000,
+      "height": 9000,
+      "alt": "a large swimming pool with a view of the ocean"
     },
     {
       "file": "/showcase/artificial-turf.webp",
-      "use": "Artificial turf — lawn-dominant. Replaced -atd5-2ciHc on 2026-08-19, which was the homepage hero photograph doing double duty and showed a house, not grass. Filename lost the 'artaficial' typo in the same round (Q-02).",
-      "unsplashId": "CzWpHIxs91s",
-      "photographer": "AZIZ KOURI",
-      "photographerUrl": "https://unsplash.com/@kourigrapher",
-      "photoUrl": "https://unsplash.com/photos/spacious-house-with-a-vibrant-green-lawn-CzWpHIxs91s",
-      "width": 9504,
-      "height": 6240,
-      "alt": "Spacious house with a vibrant green lawn"
+      "use": "Artificial turf — an installed lawn with the turf holding most of the frame. Replaced CzWpHIxs91s on 2026-08-25: that frame was a house elevation with a lawn in front of it, which is the thing the client asked the page to stop leading with. Cropped 2000x1250 at x+200 y+290 to drop the planting bed across the top.",
+      "unsplashId": "auFyKHU5l-k",
+      "photographer": "Will Goodman",
+      "photographerUrl": "https://unsplash.com/@carbonmonoxide",
+      "photoUrl": "https://unsplash.com/photos/a-lawn-with-chairs-and-a-table-in-the-middle-of-it-auFyKHU5l-k",
+      "width": 6000,
+      "height": 4000,
+      "alt": "A lawn with chairs and a table in the middle of it"
     },
     {
       "file": "/showcase/about.webp",
