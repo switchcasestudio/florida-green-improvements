@@ -210,6 +210,25 @@
           "note": "Safari fallback — 1,340 KB"
         }
       ]
+    },
+    {
+      "files": [
+        "/og.jpg"
+      ],
+      "use": "Social share card (Open Graph + Twitter). 1200x630, referenced from src/app/layout.tsx.",
+      "builtWith": "Chrome headless screenshot of a 1200x630 HTML card, rendered at 2x and downsampled with Lanczos. Type is the site's own: Archivo at wdth 84 for the name, Archivo at wdth 92-100 for the labels, on --fg-ground #fafaf8 with the --fg-brand-yellow #f7b858 chip.",
+      "derivedFrom": [
+        "/atmosphere/hero-luxury.webp"
+      ],
+      "note": "No new licence. Closes baseline finding F-07, which BEFORE.md had wrongly recorded as already fixed. ATMOSPHERE ONLY — the photograph is not captioned and nothing on the card implies it is a Florida Green Improvements project.",
+      "sources": [
+        {
+          "file": "/atmosphere/hero-luxury.webp",
+          "photographer": "Salvo Media LLC",
+          "photographerUrl": "https://unsplash.com/@salvomedia",
+          "photoUrl": "https://unsplash.com/photos/contemporary-house-with-swimming-pool-and-lush-green-lawn--atd5-2ciHc"
+        }
+      ]
     }
   ],
   "format": "All stills are WebP. Sources converted 2026-08-12: 12.46 MB -> 6.89 MB across 25 files."

@@ -35,6 +35,42 @@ const body = Inter({
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.floridagreenimprovements.com";
 
+/**
+ * Social share card. ONE static 1200x630 JPEG, not a generated route.
+ *
+ * Baseline finding F-07: none of the 15 original pages carried an og:image,
+ * so every link shared on WhatsApp, iMessage or Facebook rendered as a blank
+ * grey card. In this market referrals travel by message, so that was a direct
+ * conversion loss — and until now the rebuild reproduced it, because the
+ * metadata below declared a `summary_large_image` twitter card with no image
+ * behind it, which is the same blank card with extra steps.
+ *
+ * Deliberately not per-page. A card per service was considered and dropped:
+ * the thing being shared is the company, and the three facts worth carrying
+ * into someone else's chat window are the licence number, the rating and the
+ * service area. Those do not vary by page.
+ *
+ * Built from /atmosphere/hero-luxury.webp, already licensed and already the
+ * homepage hero, so the card matches the page it opens. IMG-01 still applies:
+ * atmosphere only, no caption, nothing implying it is the client's own work.
+ * Regenerate at 1200x630 — smaller and WhatsApp crops it, larger and some
+ * clients refuse to fetch it.
+ */
+/**
+ * Exported because Next.js does NOT deep-merge `openGraph`: any route that
+ * declares its own block replaces the parent's outright. The seven service
+ * pages declare one for their per-page title and description, which silently
+ * dropped og:image from exactly the pages a homeowner is most likely to
+ * forward. They import this and spread it back in. Anything that adds an
+ * `openGraph` block from here on has to do the same.
+ */
+export const OG_IMAGE = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Florida Green Improvements — licensed general contractor, North Miami Beach, Florida. License CGC1529180. Rated 5.0 from 44 Google reviews.",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
@@ -55,9 +91,11 @@ export const metadata: Metadata = {
     title: `${BUSINESS.name} | Impact Windows, Kitchens & Outdoor Living`,
     description:
       "Licensed general contractor in North Miami Beach. Rated 5.0 from 44 Google reviews. License CGC1529180.",
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
+    images: [OG_IMAGE],
     title: `${BUSINESS.name} | Impact Windows, Kitchens & Outdoor Living`,
     description:
       "Licensed general contractor in North Miami Beach. Rated 5.0 from 44 Google reviews.",

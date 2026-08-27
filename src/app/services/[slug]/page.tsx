@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Reveal } from "@/components/reveal";
 import { QuotePopup } from "@/components/quote-popup";
 import { BUSINESS, SERVICES, getService, showcaseSrc } from "@/lib/business";
+import { OG_IMAGE } from "@/app/layout";
 import { serviceSchema, breadcrumbSchema, JsonLd } from "@/lib/schema";
 
 export function generateStaticParams() {
@@ -31,6 +32,8 @@ export async function generateMetadata({
       description: service.description,
       url: `/services/${service.slug}`,
       type: "website",
+      // Not inherited — declaring this block at all discards the root's.
+      images: [OG_IMAGE],
     },
   };
 }
