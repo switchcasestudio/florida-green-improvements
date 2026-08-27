@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 import { BUSINESS, CATEGORIES, PRIMARY_NAV, servicesByCategory } from "@/lib/business";
@@ -54,11 +55,22 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
       <nav className="relative mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-5 md:px-10 lg:gap-6">
         <Link
           href="/"
-          className={`relative whitespace-nowrap font-data text-[11px] uppercase tracking-[0.09em] transition-opacity hover:opacity-70 ${
-            overDark && !solid ? "text-white" : "text-ink"
-          }`}
+          aria-label="Florida Green Improvements — home"
+          className="relative inline-flex items-center transition-opacity hover:opacity-70"
         >
-          Florida Green
+          {/* The client's logo, linked to home. The wordmark below the roofs
+              is charcoal-and-green — legible over the light solid nav and over
+              photographic heroes; the dark video homepage carries the bone
+              scrim above, which keeps it off pure black. Height drives the
+              size, width stays auto so the 536×239 art never distorts. */}
+          <Image
+            src="/logo.png"
+            alt="Florida Green Improvements"
+            width={536}
+            height={239}
+            priority
+            className="h-11 w-auto md:h-12"
+          />
         </Link>
 
         <ul className="hidden items-center gap-5 md:flex lg:gap-9">
