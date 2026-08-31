@@ -10,7 +10,7 @@ import { BUSINESS, SERVICES } from "@/lib/business";
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const TO = process.env.LEAD_NOTIFICATION_EMAIL;
-const FROM = process.env.RESEND_FROM_EMAIL ?? "quotes@mail.switchcasestudio.com";
+const FROM = process.env.RESEND_FROM_EMAIL ?? "donotreplay@mail.switchcasestudio.com";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
