@@ -1,4 +1,6 @@
-import { BUSINESS, FAQS, SERVICES, showcaseSrc, type Service } from "./business";
+import { BUSINESS, showcaseSrc, type Service } from "./business";
+import { getDictionary } from "./i18n";
+import { localePath, type Locale } from "./i18n/config";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.floridagreenimprovements.com";
 
@@ -12,14 +14,15 @@ const HERO_IMAGE = "/atmosphere/hero-luxury.webp";
  * were always there; nothing ever told Google about them.
  */
 
-export function businessSchema() {
+export function businessSchema(locale: Locale) {
+  const t = getDictionary(locale);
   return {
     "@context": "https://schema.org",
     "@type": "GeneralContractor",
     "@id": `${SITE}/#business`,
     name: BUSINESS.name,
     legalName: BUSINESS.legalName,
-    url: SITE,
+    url: locale === "es" ? `${SITE}/es` : SITE,
     telephone: BUSINESS.phone,
     /**
      * Must point at a file that EXISTS — this is the image Google uses for the
@@ -61,29 +64,30 @@ export function businessSchema() {
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
       credentialCategory: "license",
-      name: BUSINESS.licenseLabel,
+      name: t.licenseLabel,
       identifier: BUSINESS.license,
     },
     sameAs: [BUSINESS.social.instagram, BUSINESS.social.facebook],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "Home improvement services",
-      itemListElement: SERVICES.map((s) => ({
+      name: t.meta.catalogName,
+      itemListElement: t.services.map((s) => ({
         "@type": "Offer",
-        itemOffered: { "@type": "Service", name: s.name, url: `${SITE}/services/${s.slug}` },
+        itemOffered: { "@type": "Service", name: s.name, url: `${SITE}${localePath(locale, `/services/${s.slug}`)}` },
       })),
     },
   };
 }
 
-export function serviceSchema(service: Service) {
+export function serviceSchema(service: Service, locale: Locale) {
+  const url = `${SITE}${localePath(locale, `/services/${service.slug}`)}`;
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    "@id": `${SITE}/services/${service.slug}/#service`,
+    "@id": `${url}/#service`,
     name: service.name,
     description: service.description,
-    url: `${SITE}/services/${service.slug}`,
+    url,
     serviceType: service.name,
     image: `${SITE}${showcaseSrc(service)}`,
     provider: { "@id": `${SITE}/#business` },
@@ -103,12 +107,12 @@ export function serviceSchema(service: Service) {
  * `reviewBody` is the kind of thing that costs a site its rich results. The
  * AggregateRating in businessSchema() already carries the 5.0 / 44.
  */
-export function faqSchema() {
+export function faqSchema(locale: Locale) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "@id": `${SITE}/#faq`,
-    mainEntity: FAQS.map((f) => ({
+    "@id": `${SITE}${localePath(locale, "/#faq")}`,
+    mainEntity: getDictionary(locale).faqs.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },

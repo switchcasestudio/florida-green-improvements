@@ -1,6 +1,8 @@
 import { Star } from "lucide-react";
 import { BUSINESS, GOOGLE_REVIEWS, GOOGLE_REVIEWS_URL } from "@/lib/business";
 import { Reveal } from "@/components/reveal";
+import { getDictionary } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n/config";
 
 /**
  * Google reviews — real ones, or none at all.
@@ -41,11 +43,11 @@ function GoogleMark({ size = 18 }: { size?: number }) {
 /* A <span>, not a <p>: this is rendered inside the rating line, which is
    itself a <p>. Nesting one inside the other is invalid HTML and shows up as
    a hydration error the moment React reconciles the browser's repaired DOM. */
-function Stars({ rating }: { rating: number }) {
+function Stars({ rating, label }: { rating: number; label: string }) {
   return (
     <span
       role="img"
-      aria-label={`${rating} out of 5 stars`}
+      aria-label={label}
       className="inline-flex items-center gap-0.5"
     >
       {Array.from({ length: 5 }, (_, i) => (
@@ -62,7 +64,8 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-export function GoogleReviews() {
+export function GoogleReviews({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
   const { rating } = BUSINESS;
 
   return (
@@ -71,9 +74,9 @@ export function GoogleReviews() {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6 border-b border-line pb-8">
             <div>
-              <p className="u-data mb-5">Reviews</p>
+              <p className="u-data mb-5">{t.reviews.eyebrow}</p>
               <h2 className="max-w-[20ch] text-[clamp(1.75rem,4vw,3rem)] text-ink">
-                What our customers say on Google
+                {t.reviews.heading}
               </h2>
             </div>
 
@@ -85,10 +88,10 @@ export function GoogleReviews() {
               <div>
                 <p className="flex items-center gap-2 font-display text-[1.5rem] uppercase leading-none text-ink">
                   {rating.value.toFixed(1)}
-                  <Stars rating={5} />
+                  <Stars rating={5} label={t.reviews.stars(5)} />
                 </p>
                 <p className="mt-2 font-data text-[11px] uppercase tracking-[0.09em] text-mute">
-                  {rating.count} Google reviews
+                  {rating.count} {t.googleReviews}
                 </p>
               </div>
             </div>
@@ -101,7 +104,7 @@ export function GoogleReviews() {
               <figure className="surface flex h-full flex-col justify-between gap-8 border border-line bg-raise p-7 md:p-8">
                 <div>
                   <div className="flex items-center justify-between gap-4">
-                    <Stars rating={review.rating} />
+                    <Stars rating={review.rating} label={t.reviews.stars(review.rating)} />
                     <GoogleMark />
                   </div>
 
@@ -128,10 +131,10 @@ export function GoogleReviews() {
                         rel="noopener noreferrer"
                         className="underline decoration-line underline-offset-4 transition-colors hover:text-ink hover:decoration-brand-yellow"
                       >
-                        Read the full review on Google
+                        {t.reviews.readFull}
                       </a>
                     ) : (
-                      "Verified Google review"
+                      t.reviews.verified
                     )}
                   </p>
                 </figcaption>
@@ -149,10 +152,10 @@ export function GoogleReviews() {
               className="btn btn-ghost"
             >
               <GoogleMark size={15} />
-              Read all {rating.count} reviews
+              {t.reviews.readAll(rating.count)}
             </a>
             <p className="text-[14px] text-mute">
-              Reviews are shown as written by the customer on Google.
+              {t.reviews.note}
             </p>
           </div>
         </Reveal>

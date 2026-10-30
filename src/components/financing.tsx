@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BUSINESS, FINANCING } from "@/lib/business";
+import { BUSINESS } from "@/lib/business";
+import { getDictionary } from "@/lib/i18n";
+import { localePath, type Locale } from "@/lib/i18n/config";
 import { Reveal } from "@/components/reveal";
 
 /**
@@ -16,7 +18,9 @@ import { Reveal } from "@/components/reveal";
  * Photography is the licensed dusk house already in the repo, run at low
  * strength as a ground. Atmosphere only, never a client project (IMG-01).
  */
-export function Financing() {
+export function Financing({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
+  const FINANCING = t.financing;
   return (
     <section id="financing" className="relative overflow-hidden border-t border-line/40">
       <div className="absolute inset-0">
@@ -39,16 +43,16 @@ export function Financing() {
               {/* Two lines, not one sentence: "$0 Down" is the thing that stops
                   the scroll and it should not be buried mid-clause. */}
               <h2 className="max-w-[14ch] text-[clamp(2rem,5vw,3.5rem)] text-ink">
-                Financing available
-                <span className="mt-2 block text-brand-yellow">$0 down options</span>
+                {t.financingUi.heading}
+                <span className="mt-2 block text-brand-yellow">{t.financingUi.subheading}</span>
               </h2>
               <p className="mt-8 max-w-[52ch] text-[17px] leading-relaxed text-mute md:text-[18px]">
                 {FINANCING.intro}
               </p>
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Link href="/contact" className="btn btn-amber">
-                  Check your options
+                <Link href={localePath(locale, "/contact")} className="btn btn-amber">
+                  {t.financingUi.cta}
                 </Link>
                 <a href={BUSINESS.phoneHref} className="btn btn-ghost btn-tel">
                   {BUSINESS.phone}

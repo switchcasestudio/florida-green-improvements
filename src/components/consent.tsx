@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useCopy } from "@/lib/i18n/client";
 
 /**
  * Google Consent Mode v2.
@@ -63,10 +64,11 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
 }
 
 function ConsentBanner({ onChoose }: { onChoose: (v: "granted" | "denied") => void }) {
+  const { consent: t } = useCopy();
   return (
     <div
       role="dialog"
-      aria-label="Cookie preferences"
+      aria-label={t.label}
       aria-live="polite"
       /* Was a full-width bar across the bottom of the viewport with three
          lines of copy — it read as a page section rather than a dismissible
@@ -74,18 +76,17 @@ function ConsentBanner({ onChoose }: { onChoose: (v: "granted" | "denied") => vo
          `bottom-20` on mobile clears the sticky call bar; the RIGHT corner on
          desktop because the hero CTAs are left-aligned and the first version
          of this card sat directly on top of "Request a quote". */
-      className="fixed bottom-20 left-4 right-4 z-[60] surface border border-line bg-ground/97 p-4 shadow-[0_12px_40px_-14px_rgba(56,56,56,.4)] backdrop-blur-md sm:left-auto sm:max-w-[380px] md:bottom-6 md:right-6"
+      className="fixed bottom-20 left-4 right-4 z-[60] surface border border-line bg-ground/97 p-4 shadow-[0_12px_40px_-14px_rgba(56,56,56,.4)] backdrop-blur-md sm:left-auto sm:max-w-[380px] min-[880px]:bottom-6 md:right-6"
     >
       <p className="text-[13px] leading-[1.5] text-ink-2">
-        We use Google Analytics to see how people find this site. Nothing is stored on your device
-        unless you accept.
+        {t.body}
       </p>
       <div className="mt-3.5 flex items-center gap-2">
         <button type="button" onClick={() => onChoose("granted")} className="btn btn-sm btn-amber">
-          Accept
+          {t.accept}
         </button>
         <button type="button" onClick={() => onChoose("denied")} className="btn btn-sm btn-ghost">
-          Decline
+          {t.decline}
         </button>
       </div>
     </div>

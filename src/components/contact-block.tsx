@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 import { QuoteForm } from "@/components/quote-form";
 import { BUSINESS } from "@/lib/business";
+import { useCopy } from "@/lib/i18n/client";
 
 /**
  * Adapted from React Bits Pro `contact-9`.
@@ -32,15 +33,15 @@ import { BUSINESS } from "@/lib/business";
    read as a plain house elevation and the bathroom as a blank wall. Each image
    now names the point that must survive the crop. */
 const SHOWCASE = [
-  { label: "Kitchens", src: "/showcase/kitchen.webp", pos: "50% 50%" },
-  { label: "Bathrooms", src: "/showcase/bathroom.webp", pos: "50% 60%" },
-  { label: "Remodeling", src: "/showcase/remodeling.webp", pos: "50% 50%" },
-  { label: "Pools", src: "/showcase/pool.webp", pos: "50% 72%" },
+  { src: "/showcase/kitchen.webp", pos: "50% 50%" },
+  { src: "/showcase/bathroom.webp", pos: "50% 60%" },
+  { src: "/showcase/remodeling.webp", pos: "50% 50%" },
+  { src: "/showcase/pool.webp", pos: "50% 72%" },
   /* Was "Landscaping" over /showcase/landscape.webp. That service was retired
      on Aug 19 and its photograph deleted with it, so the slide now names the
      thing that absorbed the scope and shows the counter, the pergola and the
      water — which is what the label is actually promising. */
-  { label: "Outdoor living", src: "/showcase/outdoor-living.webp", pos: "50% 50%" },
+  { src: "/showcase/outdoor-living.webp", pos: "50% 50%" },
 ];
 
 export function ContactBlock({
@@ -49,6 +50,7 @@ export function ContactBlock({
 }: {
   showHeading?: boolean;
 } = {}) {
+  const { contact: t } = useCopy();
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -110,19 +112,19 @@ export function ContactBlock({
           <div>
             {showHeading ? (
               <motion.div variants={item}>
-                <p className="u-data mb-5 text-green">Free estimate · No obligation</p>
+                <p className="u-data mb-5 text-green">{t.offer}</p>
                 <h2 className="max-w-[15ch] text-[clamp(1.875rem,4vw,3.25rem)] text-ink">
-                  Tell us what you are planning
+                  {t.heading}
                 </h2>
                 <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed text-mute">
-                  We will come out, look at the work properly, and give you a number you can rely on.
+                  {t.body}
                 </p>
               </motion.div>
             ) : (
               <motion.div variants={item}>
-                <p className="u-data mb-4 text-green">Request a quote</p>
+                <p className="u-data mb-4 text-green">{t.requestQuote}</p>
                 <p className="max-w-[46ch] text-[16px] leading-relaxed text-mute">
-                  We will come out, look at the work properly, and give you a number you can rely on.
+                  {t.body}
                 </p>
               </motion.div>
             )}
@@ -137,17 +139,17 @@ export function ContactBlock({
             className="grid gap-7 border-t border-line/60 pt-8 sm:grid-cols-2"
           >
             <div>
-              <p className="u-data mb-3">Call us</p>
+              <p className="u-data mb-3">{t.callUs}</p>
               <a
                 href={BUSINESS.phoneHref}
                 className="font-display text-[clamp(1.25rem,2.4vw,1.625rem)] uppercase text-ink transition-colors hover:text-brand-yellow"
               >
                 {BUSINESS.phone}
               </a>
-              <p className="mt-2.5 text-[14px] text-mute">Monday to Friday, 9am–5pm</p>
+              <p className="mt-2.5 text-[14px] text-mute">{t.hours}</p>
             </div>
             <div>
-              <p className="u-data mb-3">Office</p>
+              <p className="u-data mb-3">{t.office}</p>
               <address className="not-italic text-[15px] leading-relaxed text-ink-2">
                 {address.street}
                 <br />
@@ -194,14 +196,14 @@ export function ContactBlock({
           <div aria-live="polite" className="absolute left-5 top-5 sm:left-7 sm:top-7">
             <AnimatePresence mode="wait">
               <motion.span
-                key={SHOWCASE[index].label}
+                key={t.showcase[index]}
                 initial={{ opacity: 0, y: reduce ? 0 : 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: reduce ? 0 : -6 }}
                 transition={{ duration: 0.25 }}
                 className="on-photo surface-sm inline-flex items-center border border-line/70 bg-ground/60 px-3.5 py-2 font-data text-[11px] font-medium uppercase tracking-[0.1em] text-ink backdrop-blur-sm"
               >
-                {SHOWCASE[index].label}
+                {t.showcase[index]}
               </motion.span>
             </AnimatePresence>
           </div>
@@ -209,7 +211,7 @@ export function ContactBlock({
           <div className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-4 sm:inset-x-7 sm:bottom-7">
             <p className="on-photo flex items-center gap-2 font-data text-[11px] uppercase tracking-[0.1em] text-ink-2 tabular-nums">
               <Star size={12} strokeWidth={0} fill="currentColor" className="text-brand-yellow" aria-hidden />
-              {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} reviews
+              {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} {t.reviews}
             </p>
 
             <div className="flex items-center gap-2.5">
@@ -219,7 +221,7 @@ export function ContactBlock({
               <button
                 type="button"
                 onClick={() => paginate(-1)}
-                aria-label="Previous image"
+                aria-label={t.previous}
                 className="btn-icon btn-ghost bg-ground/60 backdrop-blur-sm hover:border-ink"
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
@@ -227,7 +229,7 @@ export function ContactBlock({
               <button
                 type="button"
                 onClick={() => paginate(1)}
-                aria-label="Next image"
+                aria-label={t.next}
                 className="btn-icon btn-amber"
               >
                 <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />

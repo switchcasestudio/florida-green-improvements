@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { SERVICES } from "@/lib/business";
 import { track } from "@/components/analytics";
+import { useCopy } from "@/lib/i18n/client";
 
 type Errors = Partial<Record<"name" | "email" | "phone" | "service" | "message" | "form", string>>;
 
@@ -12,6 +12,7 @@ const field =
 const label = "u-data mb-2.5 block";
 
 export function QuoteForm() {
+  const { locale, form: t } = useCopy();
   const [errors, setErrors] = useState<Errors>({});
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [started, setStarted] = useState(false);
@@ -37,9 +38,9 @@ export function QuoteForm() {
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get("service");
     if (!wanted || !serviceRef.current) return;
-    const allowed = SERVICES.some((s) => s.name === wanted) || wanted === "Something else";
+    const allowed = t.serviceOptions.some((s) => s.value === wanted) || wanted === "Something else";
     if (allowed) serviceRef.current.value = wanted;
-  }, []);
+  }, [t.serviceOptions]);
 
   function onFirstInput() {
     if (started) return;
@@ -58,7 +59,7 @@ export function QuoteForm() {
       const res = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, locale }),
       });
 
       if (res.ok) {
@@ -69,10 +70,10 @@ export function QuoteForm() {
       }
 
       const body = await res.json().catch(() => ({}));
-      setErrors(body.errors ?? { form: body.error ?? "Something went wrong. Please try again." });
+      setErrors(body.errors ?? { form: body.error ?? t.genericError });
       setState("idle");
     } catch {
-      setErrors({ form: "We could not reach the server. Please check your connection and try again." });
+      setErrors({ form: t.networkError });
       setState("idle");
     }
   }
@@ -80,10 +81,10 @@ export function QuoteForm() {
   if (state === "sent") {
     return (
       <div className="surface border border-green-deep bg-raise p-10" role="status">
-        <p className="u-data mb-4 text-green">Request received</p>
-        <h2 className="text-[clamp(1.5rem,3vw,2.25rem)] text-ink">Thank you — we have it.</h2>
+        <p className="u-data mb-4 text-green">{t.received}</p>
+        <h2 className="text-[clamp(1.5rem,3vw,2.25rem)] text-ink">{t.thanks}</h2>
         <p className="mt-5 max-w-[44ch] text-[16px] leading-relaxed text-mute">
-          We will be in touch shortly to arrange a time to come and look at the work properly.
+          {t.followUp}
         </p>
       </div>
     );
@@ -99,17 +100,17 @@ export function QuoteForm() {
 
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className={label}>Name <span aria-hidden className="text-green">*</span></label>
+          <label htmlFor="name" className={label}>{t.name} <span aria-hidden className="text-green">*</span></label>
           <input
             id="name" name="name" type="text" required autoComplete="name"
-            className={field} placeholder="Your full name"
+            className={field} placeholder={t.namePlaceholder}
             aria-invalid={!!errors.name} aria-describedby={errors.name ? "err-name" : undefined}
           />
           {errors.name ? <p id="err-name" role="alert" className="mt-2 text-[13px] text-amber-text">{errors.name}</p> : null}
         </div>
 
         <div>
-          <label htmlFor="phone" className={label}>Phone <span aria-hidden className="text-green">*</span></label>
+          <label htmlFor="phone" className={label}>{t.phone} <span aria-hidden className="text-green">*</span></label>
           <input
             id="phone" name="phone" type="tel" required autoComplete="tel" inputMode="tel"
             className={field} placeholder="(786) 000-0000"
@@ -120,38 +121,38 @@ export function QuoteForm() {
       </div>
 
       <div>
-        <label htmlFor="email" className={label}>Email <span aria-hidden className="text-green">*</span></label>
+        <label htmlFor="email" className={label}>{t.email} <span aria-hidden className="text-green">*</span></label>
         <input
           id="email" name="email" type="email" required autoComplete="email" inputMode="email"
-          className={field} placeholder="you@example.com"
+          className={field} placeholder={t.emailPlaceholder}
           aria-invalid={!!errors.email} aria-describedby={errors.email ? "err-email" : undefined}
         />
         {errors.email ? <p id="err-email" role="alert" className="mt-2 text-[13px] text-amber-text">{errors.email}</p> : null}
       </div>
 
       <div>
-        <label htmlFor="service" className={label}>What do you need?</label>
+        <label htmlFor="service" className={label}>{t.need}</label>
         <select id="service" name="service" ref={serviceRef} defaultValue="" className={field}>
-          <option value="">Select a service</option>
-          {SERVICES.map((s) => (
-            <option key={s.slug} value={s.name}>{s.name}</option>
+          <option value="">{t.selectService}</option>
+          {t.serviceOptions.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
           ))}
-          <option value="Something else">Something else</option>
+          <option value="Something else">{t.somethingElse}</option>
         </select>
       </div>
 
       <div>
-        <label htmlFor="message" className={label}>About the project <span aria-hidden className="text-green">*</span></label>
+        <label htmlFor="message" className={label}>{t.about} <span aria-hidden className="text-green">*</span></label>
         <textarea
           id="message" name="message" required rows={5} className={`${field} resize-y`}
-          placeholder="Roughly what are you planning, and where is the property?"
+          placeholder={t.aboutPlaceholder}
           aria-invalid={!!errors.message} aria-describedby={errors.message ? "err-message" : "help-message"}
         />
         {errors.message ? (
           <p id="err-message" role="alert" className="mt-2 text-[13px] text-amber-text">{errors.message}</p>
         ) : (
           <p id="help-message" className="mt-2 text-[13px] text-mute">
-            A sentence or two is plenty — we will follow up with the detail.
+            {t.help}
           </p>
         )}
       </div>
@@ -167,7 +168,7 @@ export function QuoteForm() {
         disabled={state === "sending"}
         className="btn btn-amber mt-2 self-start disabled:opacity-50"
       >
-        {state === "sending" ? "Sending…" : "Send request"}
+        {state === "sending" ? t.sending : t.send}
       </button>
     </form>
   );

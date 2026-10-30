@@ -7,47 +7,51 @@ import { SiteNav, CallBar } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { Reveal } from "@/components/reveal";
 import { QuotePopup } from "@/components/quote-popup";
-import { BUSINESS, SERVICES, getService, showcaseSrc } from "@/lib/business";
-import { OG_IMAGE } from "@/app/layout";
+import { BUSINESS, SERVICES, showcaseSrc } from "@/lib/business";
+import { getDictionary } from "@/lib/i18n";
+import { alternatesFor, localePath, type Locale } from "@/lib/i18n/config";
+import { ogImage } from "@/views/root-document";
 import { serviceSchema, breadcrumbSchema, JsonLd } from "@/lib/schema";
 
-export function generateStaticParams() {
+export function serviceParams() {
   return SERVICES.map((s) => ({ slug: s.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const service = getService(slug);
+const find = (locale: Locale, slug: string) =>
+  getDictionary(locale).services.find((s) => s.slug === slug);
+
+export function serviceMetadata(locale: Locale, slug: string): Metadata {
+  const service = find(locale, slug);
   if (!service) return {};
+  const path = `/services/${service.slug}`;
   return {
     title: service.title,
     description: service.description,
-    alternates: { canonical: `/services/${service.slug}` },
+    alternates: alternatesFor(locale, path),
     openGraph: {
       title: service.title,
       description: service.description,
-      url: `/services/${service.slug}`,
+      url: localePath(locale, path),
       type: "website",
+      locale: getDictionary(locale).meta.ogLocale,
       // Not inherited — declaring this block at all discards the root's.
-      images: [OG_IMAGE],
+      images: [ogImage(locale)],
     },
   };
 }
 
-export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const service = getService(slug);
+export function ServicePage({ locale, slug }: { locale: Locale; slug: string }) {
+  const t = getDictionary(locale);
+  const SERVICES_T = t.services;
+  const service = find(locale, slug);
   if (!service) notFound();
+  const contactHref = localePath(locale, "/contact");
 
   /* Siblings in the same category first. Someone reading about pergolas is far
      more likely to want turf than to want impact windows, and the internal
      links Google reads should say so. Padded from the rest of the catalogue so
      the block is never short. */
-  const rest = SERVICES.filter((s) => s.slug !== service.slug);
+  const rest = SERVICES_T.filter((s) => s.slug !== service.slug);
   const others = [
     ...rest.filter((s) => s.category === service.category),
     ...rest.filter((s) => s.category !== service.category),
@@ -55,11 +59,11 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <JsonLd data={serviceSchema(service)} />
+      <JsonLd data={serviceSchema(service, locale)} />
       <JsonLd
         data={breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: service.name, path: `/services/${service.slug}` },
+          { name: t.home_, path: localePath(locale, "/") },
+          { name: service.name, path: localePath(locale, `/services/${service.slug}`) },
         ])}
       />
       <SiteNav />
@@ -85,7 +89,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <nav aria-label="Breadcrumb" className="mb-7">
                 <ol className="flex items-center gap-3 font-data text-[12px] uppercase tracking-[0.1em] text-ink">
                   <li>
-                    <Link href="/" className="transition-colors hover:text-ink">Home</Link>
+                    <Link href={localePath(locale, "/")} className="transition-colors hover:text-ink">{t.home_}</Link>
                   </li>
                   <li aria-hidden>/</li>
                   <li className="text-ink">{service.name}</li>
@@ -102,7 +106,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <section className="mx-auto max-w-[1400px] px-6 py-14 md:px-10 md:py-20">
           <div className="grid gap-14 md:grid-cols-[132px_1fr]">
             <Reveal>
-              <p className="u-data md:pt-2">Overview</p>
+              <p className="u-data md:pt-2">{t.service.overview}</p>
             </Reveal>
             <Reveal delay={120}>
               <p className="max-w-[60ch] text-[19px] leading-[1.7] text-ink-2 md:text-[21px]">
@@ -138,7 +142,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <section className="border-t border-line/40">
           <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
             <Reveal>
-              <p className="u-data mb-14">Detail</p>
+              <p className="u-data mb-14">{t.service.detail}</p>
             </Reveal>
             <div className="grid gap-14 md:grid-cols-3 md:gap-12">
               {service.points.map((p, i) => (
@@ -176,23 +180,23 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                 sitting straight on it. */}
             <div className="grid gap-12 surface bg-ground/20 px-6 py-12 backdrop-blur-[3px] md:grid-cols-[1fr_auto] md:items-end md:px-12 md:py-14">
               <Reveal>
-                <p className="u-data mb-6">Free estimate</p>
+                <p className="u-data mb-6">{t.service.freeEstimate}</p>
                 <h2 className="max-w-[18ch] text-[clamp(1.875rem,5vw,3.75rem)] text-ink">
-                  Talk to us about your {(service.ctaName ?? service.name).toLowerCase()} project
+                  {t.service.cta((service.ctaName ?? service.name).toLowerCase())}
                 </h2>
                 <p className="mt-7 flex items-center gap-2 font-data text-[12px] uppercase tracking-[0.1em] text-mute">
                   <Star size={12} strokeWidth={0} fill="currentColor" className="text-brand-yellow" aria-hidden />
-                  {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} Google reviews ·
-                  License {BUSINESS.license}
+                  {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} {t.googleReviews} ·
+                  {t.license} {BUSINESS.license}
                 </p>
               </Reveal>
               <Reveal delay={160}>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    href="/contact"
+                    href={contactHref}
                     className="btn btn-amber"
                   >
-                    Request a quote
+                    {t.requestQuote}
                   </Link>
                   <a
                     href={BUSINESS.phoneHref}
@@ -210,13 +214,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <section className="border-t border-line/40">
           <div className="mx-auto max-w-[1400px] px-6 py-24 md:px-10 md:py-28">
             <Reveal>
-              <p className="u-data mb-10">Also from Florida Green</p>
+              <p className="u-data mb-10">{t.service.also}</p>
             </Reveal>
             <ul>
               {others.map((s, i) => (
                 <Reveal as="li" key={s.slug} delay={i * 80}>
                   <Link
-                    href={`/services/${s.slug}`}
+                    href={localePath(locale, `/services/${s.slug}`)}
                     className="group flex items-center justify-between gap-6 border-b border-line/40 py-6"
                   >
                     <span className="text-[clamp(1.25rem,2.6vw,1.875rem)] font-display uppercase text-ink transition-colors group-hover:text-brand-yellow">
@@ -236,7 +240,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter locale={locale} />
       <CallBar />
       <QuotePopup />
     </>

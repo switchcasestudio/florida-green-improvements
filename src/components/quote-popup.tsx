@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { BUSINESS, RENOVATION_CATEGORIES } from "@/lib/business";
+import { BUSINESS } from "@/lib/business";
 import { track } from "@/components/analytics";
+import { useCopy } from "@/lib/i18n/client";
+import { localePath, stripLocale } from "@/lib/i18n/config";
 
 /**
  * The first-quote lead popup.
@@ -36,6 +38,7 @@ const STORAGE_KEY = "fg-quote-popup-seen";
 const DELAY_MS = 18_000;
 
 export function QuotePopup({ delay = DELAY_MS }: { delay?: number } = {}) {
+  const { locale, popup: t } = useCopy();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusTo = useRef<HTMLElement | null>(null);
@@ -59,7 +62,7 @@ export function QuotePopup({ delay = DELAY_MS }: { delay?: number } = {}) {
       /* ignore */
     }
     if (seen) return;
-    if (window.location.pathname.startsWith("/contact")) return;
+    if (stripLocale(window.location.pathname).startsWith("/contact")) return;
 
     const id = window.setTimeout(() => {
       restoreFocusTo.current = document.activeElement as HTMLElement | null;
@@ -151,36 +154,35 @@ export function QuotePopup({ delay = DELAY_MS }: { delay?: number } = {}) {
         <button
           type="button"
           onClick={() => close("button")}
-          aria-label="Close"
+          aria-label={t.close}
           className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center text-mute transition-colors hover:text-ink"
         >
           <X size={18} strokeWidth={1.5} aria-hidden />
         </button>
 
         {/* 1 — the offer */}
-        <p className="u-data text-green">Free estimate · No obligation</p>
+        <p className="u-data text-green">{t.offer}</p>
 
         {/* 2 — the only large type in the panel */}
         <h2
           id="quote-popup-title"
           className="mt-5 text-[clamp(2rem,7vw,3rem)] leading-[0.95] text-ink"
         >
-          Renovate your home
+          {t.heading}
         </h2>
 
         {/* 3 — one line, and it is a line, not a paragraph */}
         <p id="quote-popup-lede" className="mt-5 max-w-[42ch] text-[16px] leading-relaxed text-mute">
-          Tell us which part of the home you are planning and we will come out, look at it properly,
-          and give you a number you can rely on.
+          {t.lede}
         </p>
 
         {/* 4 — the categories, as targets */}
-        <p className="u-data mt-7 mb-3 sm:mt-9 sm:mb-4">What are you renovating?</p>
+        <p className="u-data mt-7 mb-3 sm:mt-9 sm:mb-4">{t.question}</p>
         <ul className="grid gap-2.5 sm:grid-cols-2">
-          {RENOVATION_CATEGORIES.map((cat) => (
+          {t.categories.map((cat) => (
             <li key={cat.label}>
               <Link
-                href={`/contact?service=${encodeURIComponent(cat.service)}`}
+                href={`${localePath(locale, "/contact")}?service=${encodeURIComponent(cat.service)}`}
                 onClick={() => {
                   track("popup_category_click", { category: cat.service });
                   close("category");
@@ -198,14 +200,14 @@ export function QuotePopup({ delay = DELAY_MS }: { delay?: number } = {}) {
 
         <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-line/60 pt-6 sm:mt-8 sm:pt-7">
           <Link
-            href="/contact"
+            href={localePath(locale, "/contact")}
             onClick={() => {
               track("cta_click", { location: "popup" });
               close("cta");
             }}
             className="btn btn-amber"
           >
-            Request a free quote
+            {t.cta}
           </Link>
           <a
             href={BUSINESS.phoneHref}

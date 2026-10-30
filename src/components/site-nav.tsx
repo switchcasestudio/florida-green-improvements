@@ -4,14 +4,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
-import { BUSINESS, CATEGORIES, PRIMARY_NAV, servicesByCategory } from "@/lib/business";
+import { BUSINESS } from "@/lib/business";
 import { track } from "@/components/analytics";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useCopy } from "@/lib/i18n/client";
+import { localePath } from "@/lib/i18n/config";
 
 /**
  * The Vault's nav: transparent over the hero photograph, resolving to solid
  * emerald-black once you leave it. Wide letter-spacing, no weight, no colour.
  */
 export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
+  const { locale, nav } = useCopy();
+  const lp = (path: string) => localePath(locale, path);
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -54,9 +59,9 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
           three lines. Nothing here changes above lg. */}
       <nav className="relative mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-5 md:px-10 lg:gap-6">
         <Link
-          href="/"
-          aria-label="Florida Green Improvements — home"
-          className="relative inline-flex items-center transition-opacity hover:opacity-70"
+          href={lp("/")}
+          aria-label={nav.homeLabel}
+          className="relative inline-flex shrink-0 items-center transition-opacity hover:opacity-70"
         >
           {/* The client's logo, linked to home. The wordmark below the roofs
               is charcoal-and-green — legible over the light solid nav and over
@@ -74,7 +79,7 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
         </Link>
 
         <ul className="hidden items-center gap-5 md:flex lg:gap-9">
-          {PRIMARY_NAV.map((item) => {
+          {nav.primary.map((item) => {
             const linkClass = `font-data text-[12px] uppercase tracking-[0.08em] transition-colors ${
               overDark && !solid ? "text-white/85 hover:text-white" : "text-ink-2 hover:text-ink"
             }`;
@@ -92,10 +97,10 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
                and it was where "Impact Glazing" was still showing. Three
                columns, a category heading each, no descriptions: the client
                asked for concise, and the detail belongs on the pages. */
-            if (item.label === "Services") {
+            if (item.href === "/#services") {
               return (
                 <li key={item.href} className="group relative">
-                  <Link href={item.href} className={linkClass}>
+                  <Link href={lp(item.href)} className={linkClass}>
                     {item.label}
                   </Link>
                   <div className="pointer-events-none absolute left-1/2 top-full z-50 -translate-x-1/2 pt-4 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
@@ -118,22 +123,22 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
                           services. Case is doing most of the work: it
                           separates the two levels at a glance in a way that a
                           shade of grey never did. */}
-                      {CATEGORIES.map((cat) => (
+                      {nav.categories.map((cat) => (
                         /* 208px is what "Impact Windows & Doors" needs to stay
                            on one line at 15px. Three of those plus the gaps
                            and padding come to 712px, inside the 760 cap. */
                         <div key={cat.id} className="min-w-[208px]">
                           <Link
-                            href={`/#${cat.anchor}`}
+                            href={lp(`/#${cat.anchor}`)}
                             className="u-data block whitespace-nowrap transition-colors hover:text-ink"
                           >
                             {cat.label}
                           </Link>
                           <ul className="mt-3 border-t border-line pt-2">
-                            {servicesByCategory(cat.id).map((s) => (
+                            {cat.services.map((s) => (
                               <li key={s.slug}>
                                 <Link
-                                  href={`/services/${s.slug}`}
+                                  href={lp(`/services/${s.slug}`)}
                                   className="block surface-sm px-2 py-2 text-[15px] leading-snug text-ink-2 transition-colors hover:bg-sink hover:text-ink"
                                 >
                                   {s.name}
@@ -151,7 +156,7 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
 
             return (
               <li key={item.href}>
-                <Link href={item.href} className={linkClass}>
+                <Link href={lp(item.href)} className={linkClass}>
                   {item.label}
                 </Link>
               </li>
@@ -165,27 +170,30 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
             onClick={() => track("phone_click", { location: "nav" })}
             /* whitespace-nowrap: a phone number broken across lines is not a
                phone number. It is also the widest single item in the bar, so
-               it is the first thing to wrap when the row gets tight. */
-            className={`relative hidden whitespace-nowrap font-data text-[12px] uppercase tracking-[0.1em] transition-colors sm:inline ${
+               it is the first thing to wrap when the row gets tight. It sits out
+               768-999px, where the links and the language switcher leave it no
+               room; the sticky call bar covers it up to 879px. */
+            className={`relative hidden whitespace-nowrap font-data text-[12px] uppercase tracking-[0.1em] transition-colors sm:inline md:hidden min-[1000px]:inline ${
               overDark && !solid ? "text-white hover:text-amber" : "text-ink hover:text-brand-yellow"
             }`}
           >
             {BUSINESS.phone}
           </a>
-          {/* Header CTA. Hidden below md — the phone bar already pins both
-              actions to the bottom of every mobile screen, and a third
-              control in a 375px bar would crowd the burger. */}
+          {/* Header CTA. Hidden below 880px, the width at which it fits beside the
+              links and the language switcher. The phone bar pins both actions
+              to the bottom of the screen until then. */}
           <Link
-            href="/contact"
+            href={lp("/contact")}
             onClick={() => track("cta_click", { location: "nav" })}
-            className="btn btn-sm btn-amber hidden md:inline-flex"
+            className="btn btn-sm btn-amber hidden min-[880px]:inline-flex"
           >
-            Free Consultation
+            {nav.freeConsultation}
           </Link>
+          <LanguageSwitcher onDark={overDark && !solid} />
           <button
             type="button"
             onClick={() => setOpen(true)}
-            aria-label="Open menu"
+            aria-label={nav.openMenu}
             /* The hit area was exactly the 20px icon — the primary navigation
                control on a phone, at less than half the 44px minimum. Negative
                margins absorb the growth so the bar height does not change. */
@@ -201,17 +209,20 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
       {open ? (
         <div className="fixed inset-0 z-50 flex flex-col bg-ground md:hidden">
           <div className="flex items-center justify-between px-6 py-5">
-            <span className="font-data text-[11px] uppercase tracking-[0.09em] text-ink">Menu</span>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="-my-3 -mr-3 flex h-11 w-11 items-center justify-center text-ink">
-              <X size={20} strokeWidth={1.25} aria-hidden />
-            </button>
+            <span className="font-data text-[11px] uppercase tracking-[0.09em] text-ink">{nav.menu}</span>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              <button type="button" onClick={() => setOpen(false)} aria-label={nav.closeMenu} className="-my-3 -mr-3 flex h-11 w-11 items-center justify-center text-ink">
+                <X size={20} strokeWidth={1.25} aria-hidden />
+              </button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto px-6 pb-10">
             <ul className="flex flex-col gap-1 border-t border-line/40 pt-6">
-              {PRIMARY_NAV.map((item) => (
+              {nav.primary.map((item) => (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={lp(item.href)}
                     onClick={() => setOpen(false)}
                     className="block py-3 font-display text-3xl uppercase text-ink"
                   >
@@ -225,20 +236,20 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
                 are links to the matching homepage section and the services sit
                 under them — 44px rows, because this is the only navigation a
                 thumb gets. */}
-            {CATEGORIES.map((cat) => (
+            {nav.categories.map((cat) => (
               <div key={cat.id} className="mt-9">
                 <Link
-                  href={`/#${cat.anchor}`}
+                  href={lp(`/#${cat.anchor}`)}
                   onClick={() => setOpen(false)}
                   className="u-data mb-3 block"
                 >
                   {cat.label}
                 </Link>
                 <ul className="flex flex-col border-t border-line/40 pt-1">
-                  {servicesByCategory(cat.id).map((s) => (
+                  {cat.services.map((s) => (
                     <li key={s.slug}>
                       <Link
-                        href={`/services/${s.slug}`}
+                        href={lp(`/services/${s.slug}`)}
                         onClick={() => setOpen(false)}
                         className="flex min-h-[44px] items-center text-[16px] text-ink-2"
                       >
@@ -258,20 +269,21 @@ export function SiteNav({ overDark = false }: { overDark?: boolean } = {}) {
 
 /** Mobile-only sticky call bar. Contractors close on the phone. */
 export function CallBar() {
+  const { locale, nav } = useCopy();
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-line/50 bg-ground/95 backdrop-blur-sm md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-line/50 bg-ground/95 backdrop-blur-sm min-[880px]:hidden">
       <a
         href={BUSINESS.phoneHref}
         onClick={() => track("phone_click", { location: "callbar" })}
         className="flex items-center justify-center gap-2 py-4 font-data text-[12px] uppercase tracking-[0.1em] text-ink"
       >
-        <Phone size={13} strokeWidth={1.5} aria-hidden /> Call
+        <Phone size={13} strokeWidth={1.5} aria-hidden /> {nav.call}
       </a>
       <a
-        href="/contact"
+        href={localePath(locale, "/contact")}
         className="flex items-center justify-center bg-amber py-4 font-data text-[12px] font-medium uppercase tracking-[0.1em] text-on-amber"
       >
-        Request a quote
+        {nav.requestQuote}
       </a>
     </div>
   );

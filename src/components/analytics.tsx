@@ -49,7 +49,20 @@ export function Analytics() {
             strategy="afterInteractive"
           />
           <Script id="ga-init" strategy="afterInteractive">
+            {/* 404s render without the beforeInteractive script above, so this
+                sets up gtag itself there, with the same denied defaults. */}
             {`
+              window.dataLayer = window.dataLayer || [];
+              if (!window.gtag) {
+                window.gtag = function(){dataLayer.push(arguments);};
+                gtag('consent', 'default', {
+                  analytics_storage: 'denied',
+                  ad_storage: 'denied',
+                  ad_user_data: 'denied',
+                  ad_personalization: 'denied',
+                  wait_for_update: 500
+                });
+              }
               gtag('js', new Date());
               gtag('config', '${GA}', { send_page_view: true });
             `}
@@ -73,7 +86,8 @@ export function Analytics() {
 }
 
 type EventName =
-  | "phone_click"
+  | "language_switch"
+| "phone_click"
   | "whatsapp_click"
   | "form_start"
   | "form_submit"

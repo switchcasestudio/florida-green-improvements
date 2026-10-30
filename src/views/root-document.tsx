@@ -3,7 +3,10 @@ import { Archivo, Inter } from "next/font/google";
 import { Analytics } from "@/components/analytics";
 import { ConsentProvider } from "@/components/consent";
 import { BUSINESS } from "@/lib/business";
-import "./globals.css";
+import { CopyProvider } from "@/lib/i18n/client";
+import { alternatesFor, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n";
+import "@/app/globals.css";
 
 /* ── TYPE ─────────────────────────────────────────────────────────────
    Display : Archivo variable — width axis pulled to condensed, set light
@@ -64,41 +67,41 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.floridagreenimprov
  * forward. They import this and spread it back in. Anything that adds an
  * `openGraph` block from here on has to do the same.
  */
-export const OG_IMAGE = {
+export const ogImage = (locale: Locale) => ({
   url: "/og.jpg",
   width: 1200,
   height: 630,
-  alt: "Florida Green Improvements — licensed general contractor, North Miami Beach, Florida. License CGC1529180. Rated 5.0 from 44 Google reviews.",
-};
+  alt: getDictionary(locale).meta.ogAlt,
+});
 
-export const metadata: Metadata = {
+export const rootMetadata = (locale: Locale): Metadata => {
+  const { meta } = getDictionary(locale);
+  const image = ogImage(locale);
+  return {
   metadataBase: new URL(SITE),
   title: {
-    default: `${BUSINESS.name} | Impact Windows, Kitchens & Outdoor Living`,
+    default: meta.title,
     template: `%s | ${BUSINESS.name}`,
   },
-  description:
-    "Licensed general contractor serving Miami-Dade and Broward. Hurricane-rated impact windows and doors, kitchens, bathrooms, full remodels, pools, turf and outdoor living. Rated 5.0 from 44 Google reviews. License CGC1529180.",
+  description: meta.description,
   applicationName: BUSINESS.name,
   authors: [{ name: BUSINESS.name }],
   creator: BUSINESS.name,
-  alternates: { canonical: "/" },
+  alternates: alternatesFor(locale, "/"),
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: SITE,
+    locale: meta.ogLocale,
+    url: locale === "es" ? `${SITE}/es` : SITE,
     siteName: BUSINESS.name,
-    title: `${BUSINESS.name} | Impact Windows, Kitchens & Outdoor Living`,
-    description:
-      "Licensed general contractor in North Miami Beach. Rated 5.0 from 44 Google reviews. License CGC1529180.",
-    images: [OG_IMAGE],
+    title: meta.title,
+    description: meta.ogDescription,
+    images: [image],
   },
   twitter: {
     card: "summary_large_image",
-    images: [OG_IMAGE],
-    title: `${BUSINESS.name} | Impact Windows, Kitchens & Outdoor Living`,
-    description:
-      "Licensed general contractor in North Miami Beach. Rated 5.0 from 44 Google reviews.",
+    images: [image],
+    title: meta.title,
+    description: meta.twitterDescription,
   },
   /**
    * The site stays out of the index until it is live on the real domain.
@@ -119,19 +122,21 @@ export const metadata: Metadata = {
     ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
     : undefined,
   formatDetection: { telephone: true, address: true },
+  };
 };
 
-export const viewport: Viewport = {
+export const rootViewport: Viewport = {
   themeColor: "#FAFAF8",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootDocument({ locale, children }: { locale: Locale; children: React.ReactNode }) {
+  const t = getDictionary(locale);
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${display.variable} ${body.variable}`}
       suppressHydrationWarning
     >
@@ -153,11 +158,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <body> before React hydrates. Not our markup — but the mismatch is
           real, so <body> gets the same guard <html> already carries. */}
       <body suppressHydrationWarning>
-        <a href="#main" className="skip-link">Skip to content</a>
-        <ConsentProvider>
-          {children}
-          <Analytics />
-        </ConsentProvider>
+        <a href="#main" className="skip-link">{t.skipLink}</a>
+        <CopyProvider copy={t.client}>
+          <ConsentProvider>
+            {children}
+            <Analytics />
+          </ConsentProvider>
+        </CopyProvider>
       </body>
     </html>
   );

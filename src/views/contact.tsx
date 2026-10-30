@@ -4,21 +4,24 @@ import { SiteNav, CallBar } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { Reveal } from "@/components/reveal";
 import { ContactBlock } from "@/components/contact-block";
-import { BUSINESS } from "@/lib/business";
+import { getDictionary } from "@/lib/i18n";
+import { alternatesFor, localePath, type Locale } from "@/lib/i18n/config";
 import { breadcrumbSchema, JsonLd } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "Contact & Free Estimates",
-  description:
-    "Request a free estimate from Florida Green Improvements. Licensed Florida general contractor CGC1529180 serving Miami-Dade and Broward. Call (786) 238-1213.",
-  alternates: { canonical: "/contact" },
+export const contactMetadata = (locale: Locale): Metadata => {
+  const { meta } = getDictionary(locale);
+  return {
+    title: meta.contactTitle,
+    description: meta.contactDescription,
+    alternates: alternatesFor(locale, "/contact"),
+  };
 };
 
-export default function ContactPage() {
-  const { address } = BUSINESS;
+export function ContactPage({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
   return (
     <>
-      <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
+      <JsonLd data={breadcrumbSchema([{ name: t.home_, path: localePath(locale, "/") }, { name: t.contactPage.nav, path: localePath(locale, "/contact") }])} />
       <SiteNav />
       <main id="main">
         <section className="relative overflow-hidden border-b border-line/40">
@@ -29,15 +32,15 @@ export default function ContactPage() {
           </div>
           <div className="relative mx-auto max-w-[1400px] px-6 pb-20 pt-40 md:px-10 md:pb-28 md:pt-48">
             
-              <p className="u-data mb-7 text-ink">Free estimates · No obligation</p>
-              <h1 className="max-w-[14ch] text-[clamp(2.5rem,7.5vw,6rem)] text-ink">Tell us what you are planning</h1>
+              <p className="u-data mb-7 text-ink">{t.contactPage.eyebrow}</p>
+              <h1 className="max-w-[14ch] text-[clamp(2.5rem,7.5vw,6rem)] text-ink">{t.contactPage.heading}</h1>
             
           </div>
         </section>
 
         <ContactBlock showHeading={false} />
       </main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
       <CallBar />
     </>
   );

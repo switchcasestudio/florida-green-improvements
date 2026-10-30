@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { BUSINESS, SERVICES } from "@/lib/business";
+import { BUSINESS } from "@/lib/business";
+import { getDictionary } from "@/lib/i18n";
+import { localePath, type Locale } from "@/lib/i18n/config";
 
 /* Inline rather than lucide-react: this version of lucide has dropped brand
    glyphs (`Facebook` / `Instagram` no longer exist as exports), and a brand
@@ -24,7 +26,8 @@ function FacebookMark() {
   );
 }
 
-export function SiteFooter() {
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
   const { address } = BUSINESS;
   return (
     <footer className="border-t border-line/40 bg-sink">
@@ -35,9 +38,7 @@ export function SiteFooter() {
               Florida Green Improvements
             </p>
             <p className="mt-6 max-w-[34ch] text-[15px] leading-relaxed text-mute">
-              A licensed Florida general contractor working across hurricane-rated impact windows
-              and doors, kitchen and bathroom remodeling and outdoor renovation in Miami-Dade
-              and Broward.
+              {t.footer.blurb}
             </p>
             {/* Was one long uppercase line that ran the full column width and
                 read as fine print. Two lines, boxed, and the licence number
@@ -45,21 +46,21 @@ export function SiteFooter() {
                 page and was the least prominent thing in the footer. */}
             <div className="mt-8 inline-block border-l-2 border-amber pl-4">
               <p className="font-data text-[13px] font-medium uppercase tracking-[0.08em] text-ink">
-                License {BUSINESS.license}
+                {t.license} {BUSINESS.license}
               </p>
               <p className="mt-1 font-data text-[12px] uppercase tracking-[0.08em] text-mute">
-                {BUSINESS.licenseLabel}
+                {t.licenseLabel}
               </p>
             </div>
           </div>
 
           <div>
-            <p className="u-data mb-6">Services</p>
+            <p className="u-data mb-6">{t.footer.services}</p>
             <ul className="flex flex-col gap-0.5">
-              {SERVICES.map((s) => (
+              {t.services.map((s) => (
                 <li key={s.slug}>
                   <Link
-                    href={`/services/${s.slug}`}
+                    href={localePath(locale, `/services/${s.slug}`)}
                     className="block py-1.5 text-[15px] text-mute transition-colors hover:text-ink"
                   >
                     {s.name}
@@ -70,7 +71,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <p className="u-data mb-6">Contact</p>
+            <p className="u-data mb-6">{t.footer.contact}</p>
             <address className="not-italic">
               <a
                 href={BUSINESS.phoneHref}
@@ -94,7 +95,7 @@ export function SiteFooter() {
                   href={BUSINESS.social.instagram}
                   rel="noopener noreferrer"
                   target="_blank"
-                  aria-label="Florida Green Improvements on Instagram"
+                  aria-label={t.footer.onInstagram}
                   className="btn-icon border-line text-mute transition-colors hover:border-ink hover:text-ink"
                 >
                   <InstagramMark />
@@ -105,7 +106,7 @@ export function SiteFooter() {
                   href={BUSINESS.social.facebook}
                   rel="noopener noreferrer"
                   target="_blank"
-                  aria-label="Florida Green Improvements on Facebook"
+                  aria-label={t.footer.onFacebook}
                   className="btn-icon border-line text-mute transition-colors hover:border-ink hover:text-ink"
                 >
                   <FacebookMark />
@@ -117,14 +118,14 @@ export function SiteFooter() {
                 links rather than nothing, since these live on the homepage. */}
             <ul className="mt-8 flex flex-col gap-0.5">
               {[
-                { href: "/#financing", label: "Financing & $0 down" },
-                { href: "/#reviews", label: "Google reviews" },
-                { href: "/#faq", label: "FAQ" },
-                { href: "/contact", label: "Request a quote" },
+                { href: "/#financing", label: t.footer.financing },
+                { href: "/#reviews", label: locale === "es" ? "Reseñas de Google" : "Google reviews" },
+                { href: "/#faq", label: t.footer.faq },
+                { href: "/contact", label: t.requestQuote },
               ].map((l) => (
                 <li key={l.href}>
                   <Link
-                    href={l.href}
+                    href={localePath(locale, l.href)}
                     className="block py-1.5 text-[15px] text-mute transition-colors hover:text-ink"
                   >
                     {l.label}
@@ -140,10 +141,10 @@ export function SiteFooter() {
             © {new Date().getFullYear()} {BUSINESS.legalName}
           </p>
           <p className="u-data">
-            {BUSINESS.rating.value.toFixed(1)} ★ · {BUSINESS.rating.count} Google reviews
+            {BUSINESS.rating.value.toFixed(1)} ★ · {BUSINESS.rating.count} {t.googleReviews}
           </p>
           <p className="u-data">
-            Site by{" "}
+            {t.footer.siteBy}{" "}
             <a
               href="https://switchcasestudio.com"
               target="_blank"

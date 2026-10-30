@@ -15,6 +15,27 @@ const FROM = process.env.RESEND_FROM_EMAIL ?? "donotreplay@mail.switchcasestudio
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+const MESSAGES = {
+  en: {
+    name: "Please enter your name.",
+    email: "Please enter a valid email address.",
+    phone: "Please enter a phone number we can reach you on.",
+    message: "Tell us a little about the project — 10 characters or more.",
+    service: "Please choose a service from the list.",
+    config: `Something went wrong on our side. Please call us on ${BUSINESS.phone}.`,
+    send: `We could not send that. Please call us on ${BUSINESS.phone}.`,
+  },
+  es: {
+    name: "Escriba su nombre.",
+    email: "Escriba un correo electrónico válido.",
+    phone: "Escriba un número de teléfono en el que podamos localizarle.",
+    message: "Cuéntenos un poco sobre el proyecto: 10 caracteres o más.",
+    service: "Elija un servicio de la lista.",
+    config: `Algo salió mal de nuestro lado. Llámenos al ${BUSINESS.phone}.`,
+    send: `No pudimos enviarlo. Llámenos al ${BUSINESS.phone}.`,
+  },
+};
+
 export async function POST(request: Request) {
   let payload: Record<string, unknown>;
   try {
@@ -30,16 +51,19 @@ export async function POST(request: Request) {
   const message = String(payload.message ?? "").trim();
   const honeypot = String(payload.company ?? "").trim();
 
+  const spanish = payload.locale === "es";
+  const m = spanish ? MESSAGES.es : MESSAGES.en;
+
   // Bots fill hidden fields. Humans do not. Return 200 so the bot stops retrying.
   if (honeypot) return NextResponse.json({ ok: true });
 
   const errors: Record<string, string> = {};
-  if (name.length < 2) errors.name = "Please enter your name.";
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) errors.email = "Please enter a valid email address.";
-  if (phone.replace(/\D/g, "").length < 10) errors.phone = "Please enter a phone number we can reach you on.";
-  if (message.length < 10) errors.message = "Tell us a little about the project — 10 characters or more.";
+  if (name.length < 2) errors.name = m.name;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) errors.email = m.email;
+  if (phone.replace(/\D/g, "").length < 10) errors.phone = m.phone;
+  if (message.length < 10) errors.message = m.message;
   if (service && !SERVICES.some((s) => s.name === service) && service !== "Something else") {
-    errors.service = "Please choose a service from the list.";
+    errors.service = m.service;
   }
   if (Object.keys(errors).length) {
     return NextResponse.json({ errors }, { status: 422 });
@@ -48,7 +72,7 @@ export async function POST(request: Request) {
   if (!RESEND_KEY || !TO) {
     console.error("[quote] RESEND_API_KEY or LEAD_NOTIFICATION_EMAIL is not configured.");
     return NextResponse.json(
-      { error: `Something went wrong on our side. Please call us on ${BUSINESS.phone}.` },
+      { error: m.config },
       { status: 500 },
     );
   }
@@ -61,6 +85,7 @@ export async function POST(request: Request) {
         <tr><td style="padding:4px 16px 4px 0;color:#666">Email</td><td><a href="mailto:${esc(email)}">${esc(email)}</a></td></tr>
         <tr><td style="padding:4px 16px 4px 0;color:#666">Phone</td><td><a href="tel:${esc(phone)}">${esc(phone)}</a></td></tr>
         <tr><td style="padding:4px 16px 4px 0;color:#666">Service</td><td>${esc(service || "—")}</td></tr>
+        ${spanish ? '<tr><td style="padding:4px 16px 4px 0;color:#666">Language</td><td><strong>Spanish (submitted from the Spanish site)</strong></td></tr>' : ""}
       </table>
       <p style="margin:20px 0 6px;color:#666;font-size:13px">Message</p>
       <p style="margin:0;white-space:pre-wrap;font-size:14px">${esc(message)}</p>
@@ -87,14 +112,14 @@ export async function POST(request: Request) {
     if (!res.ok) {
       console.error("[quote] Resend rejected the send:", res.status, await res.text());
       return NextResponse.json(
-        { error: `We could not send that. Please call us on ${BUSINESS.phone}.` },
+        { error: m.send },
         { status: 502 },
       );
     }
   } catch (err) {
     console.error("[quote] Send failed:", err);
     return NextResponse.json(
-      { error: `We could not send that. Please call us on ${BUSINESS.phone}.` },
+      { error: m.send },
       { status: 502 },
     );
   }

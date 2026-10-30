@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/business";
+import { LOCALES, localePath } from "@/lib/i18n/config";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.floridagreenimprovements.com";
 
@@ -10,15 +11,29 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.floridagreenimprov
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return [
-    { url: `${SITE}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
-    { url: `${SITE}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.6 },
-    { url: `${SITE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.9 },
+  const pages: { path: string; changeFrequency: "monthly" | "yearly"; priority: number }[] = [
+    { path: "/", changeFrequency: "monthly", priority: 1 },
+    { path: "/about", changeFrequency: "yearly", priority: 0.6 },
+    { path: "/contact", changeFrequency: "yearly", priority: 0.9 },
     ...SERVICES.map((s) => ({
-      url: `${SITE}/services/${s.slug}`,
-      lastModified: now,
+      path: `/services/${s.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
   ];
+  return LOCALES.flatMap((locale) =>
+    pages.map(({ path, changeFrequency, priority }) => ({
+      url: `${SITE}${localePath(locale, path)}`,
+      lastModified: now,
+      changeFrequency,
+      priority,
+      alternates: {
+        languages: {
+          en: `${SITE}${path}`,
+          es: `${SITE}${localePath("es", path)}`,
+          "x-default": `${SITE}${path}`,
+        },
+      },
+    })),
+  );
 }

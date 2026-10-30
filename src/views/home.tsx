@@ -12,7 +12,9 @@ import { WhyChooseUs } from "@/components/why-choose-us";
 import { Financing } from "@/components/financing";
 import { Faq } from "@/components/faq";
 import { QuotePopup } from "@/components/quote-popup";
-import { BUSINESS, SERVICES, CATEGORIES, servicesByCategory, showcaseSrc } from "@/lib/business";
+import { BUSINESS, showcaseSrc } from "@/lib/business";
+import { getDictionary } from "@/lib/i18n";
+import { localePath, type Locale } from "@/lib/i18n/config";
 import { businessSchema, faqSchema, JsonLd } from "@/lib/schema";
 
 /* ── THE VAULT ────────────────────────────────────────────────────────
@@ -44,32 +46,20 @@ const HERO_VIDEO: HeroSource[] | null = [
    Deliberately no people and no third-party branding: a photograph of a crew
    sitting under "How it works" reads as *his* crew, which is exactly the claim
    the licensing note in public/process/CREDITS.json forbids. */
-const PROCESS = [
-  {
-    n: "01",
-    title: "Plan",
-    img: "/process/plan.webp",
-    body: "Permits, construction approval and material scheduling are handled before anyone starts work — so the timeline you are given is the timeline you get.",
-  },
-  {
-    n: "02",
-    title: "Design",
-    img: "/process/design.webp",
-    body: "We work through layout, materials, fixtures and finishes with you, with visual aids so you can see the room before it is built. At no additional cost.",
-  },
-  {
-    n: "03",
-    title: "Build",
-    img: "/process/build.webp",
-    body: "One licensed general contractor carries the permit, the schedule and the responsibility from demolition through final inspection.",
-  },
-];
+const PROCESS_IMAGES = ["/process/plan.webp", "/process/design.webp", "/process/build.webp"];
 
-export default function Home() {
+export function Home({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
+  const contactHref = localePath(locale, "/contact");
+  const PROCESS = t.home.process.map((step, i) => ({
+    ...step,
+    n: String(i + 1).padStart(2, "0"),
+    img: PROCESS_IMAGES[i],
+  }));
   return (
     <>
-      <JsonLd data={businessSchema()} />
-      <JsonLd data={faqSchema()} />
+      <JsonLd data={businessSchema(locale)} />
+      <JsonLd data={faqSchema(locale)} />
       <SiteNav />
 
       <main id="main">
@@ -141,21 +131,20 @@ export default function Home() {
             <div className="hero-glass">
               <p className="u-data mb-6 text-ink">
                 <span className="text-ink" aria-hidden>&#9679;</span>{" "}
-                {BUSINESS.address.locality}, Florida &middot; License {BUSINESS.license}
+                {BUSINESS.address.locality}, Florida &middot; {t.license} {BUSINESS.license}
               </p>
 
               <h1 className="mx-auto max-w-[15ch] text-[clamp(2.25rem,6vw,4.5rem)] text-ink">
-                {BUSINESS.tagline}
+                {t.tagline}
               </h1>
 
               <p className="mx-auto mt-7 max-w-[46ch] text-[17px] leading-relaxed text-ink md:text-[19px]">
-                Impact windows, kitchens and full remodels for South Florida homes that have to
-                survive the season and still look like this.
+                {t.home.heroLede}
               </p>
 
               <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-                <Link href="/contact" className="btn btn-amber">
-                  Request a quote
+                <Link href={contactHref} className="btn btn-amber">
+                  {t.requestQuote}
                 </Link>
                 <a href={BUSINESS.phoneHref} className="btn btn-ghost btn-tel bg-ground/70 backdrop-blur-[3px]">
                   {BUSINESS.phone}
@@ -168,13 +157,13 @@ export default function Home() {
             <ul className="flex flex-wrap items-center gap-x-10 gap-y-3">
               <li className="flex items-center gap-2 font-data text-[12px] uppercase tracking-[0.1em] text-ink-2">
                 <Star size={12} strokeWidth={0} fill="currentColor" className="text-brand-yellow" aria-hidden />
-                {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} Google reviews
+                {BUSINESS.rating.value.toFixed(1)} · {BUSINESS.rating.count} {t.googleReviews}
               </li>
               <li className="font-data text-[12px] uppercase tracking-[0.1em] text-ink-2">
-                Licensed &amp; insured
+                {t.home.licensedInsured}
               </li>
               <li className="font-data text-[12px] uppercase tracking-[0.1em] text-ink-2">
-                Miami-Dade &amp; Broward
+                {t.home.area}
               </li>
             </ul>
           </div>
@@ -190,13 +179,13 @@ export default function Home() {
         <section className="mx-auto max-w-[1400px] px-6 pt-28 pb-20 md:px-10 md:pt-40 md:pb-20">
           <div className="grid gap-14 md:grid-cols-[132px_1fr]">
             <Reveal>
-              <p className="u-data md:pt-3">About</p>
+              <p className="u-data md:pt-3">{t.home.aboutEyebrow}</p>
             </Reveal>
 
             <div className="grid gap-12 lg:grid-cols-[1fr_minmax(260px,400px)] lg:items-center lg:gap-16">
               <Reveal delay={120}>
                 <h2 className="max-w-[24ch] text-[clamp(1.75rem,4vw,3.25rem)] font-display uppercase leading-[0.98] text-ink">
-                  One contractor for the whole job.
+                  {t.home.aboutHeading}
                 </h2>
                 {/* "Impact glazing" was here until Aug 13. The client's note
                     was that he did not understand the phrase, and he is the
@@ -206,17 +195,14 @@ export default function Home() {
                     the standalone page was retired — it is now what the
                     windows ARE, which is also how it is sold. */}
                 <p className="mt-10 max-w-[62ch] text-[17px] leading-relaxed text-mute md:text-[18px]">
-                  Florida Green Improvements is a licensed general contractor working across
-                  hurricane-rated impact windows and doors, kitchen and bathroom remodeling, and
-                  outdoor renovation. One permit, one schedule, one point of contact — from the
-                  first drawing to the final inspection.
+                  {t.home.aboutBody}
                 </p>
                 {/* Ghost rather than amber on purpose: the brass fill is the
                     page's one loud CTA and it already appears in the hero and
                     the closing block. A third would flatten all three. */}
                 <div className="mt-10">
-                  <Link href="/about" className="btn btn-ghost">
-                    About the company
+                  <Link href={localePath(locale, "/about")} className="btn btn-ghost">
+                    {t.home.aboutCta}
                   </Link>
                 </div>
               </Reveal>
@@ -244,7 +230,7 @@ export default function Home() {
               everywhere else. It was 288. */}
           <div className="mx-auto max-w-[1400px] px-6 pt-16 md:px-10 md:pt-20">
             <Reveal>
-              <h2 className="u-data">Services · {SERVICES.length}</h2>
+              <h2 className="u-data">{t.home.servicesHeading} · {t.services.length}</h2>
             </Reveal>
           </div>
 
@@ -257,7 +243,7 @@ export default function Home() {
                 some whole sections, so the three groups read as three separate
                 sections rather than three parts of one list. 64px is enough to
                 say "new group" and little enough to say "same section". */}
-            {CATEGORIES.map((cat, ci) => (
+            {t.categories.map((cat, ci) => (
               <div
                 key={cat.id}
                 id={cat.anchor}
@@ -290,11 +276,11 @@ export default function Home() {
 
                 <Reveal delay={120}>
                   <CinematicList
-                    items={servicesByCategory(cat.id).map((s, i) => ({
+                    items={t.services.filter((s) => s.category === cat.id).map((s, i) => ({
                       id: String(i + 1).padStart(2, "0"),
                       title: s.name,
                       meta: cat.short,
-                      href: `/services/${s.slug}`,
+                      href: localePath(locale, `/services/${s.slug}`),
                       src: showcaseSrc(s),
                     }))}
                   />
@@ -320,7 +306,7 @@ export default function Home() {
 
           <div className="relative mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-24">
             <Reveal>
-              <h2 className="u-data mb-10">How it works</h2>
+              <h2 className="u-data mb-10">{t.home.processHeading}</h2>
             </Reveal>
             <div className="grid gap-14 md:grid-cols-3 md:gap-12">
               {PROCESS.map((step, i) => (
@@ -352,8 +338,8 @@ export default function Home() {
 
             <Reveal delay={420}>
               <div className="mt-14 flex justify-center">
-                <Link href="/contact" className="btn btn-amber">
-                  Free Consultation
+                <Link href={contactHref} className="btn btn-amber">
+                  {t.home.freeConsultation}
                 </Link>
               </div>
             </Reveal>
@@ -373,10 +359,10 @@ export default function Home() {
              either alone. Financing follows the proof and not the other way
              round: "$0 down" is persuasive once you already believe the work
              is good, and cheap-sounding before that. */}
-        <WhyChooseUs />
-        <GoogleReviews />
-        <Financing />
-        <Faq />
+        <WhyChooseUs locale={locale} />
+        <GoogleReviews locale={locale} />
+        <Financing locale={locale} />
+        <Faq locale={locale} />
 
         {/* ── CTA ────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-t border-line/40">
@@ -406,19 +392,18 @@ export default function Home() {
               {/* ground/95 measured, not picked: over the darkest pixel in this
                   photograph the muted body copy still reads 4.76:1. */}
               <div className="mx-auto max-w-[840px] surface bg-ground/20 px-7 py-14 text-center shadow-[0_20px_70px_-28px_rgba(56,56,56,.5)] backdrop-blur-[6px] md:px-16 md:py-20">
-                <p className="u-data mb-8">Free estimates</p>
+                <p className="u-data mb-8">{t.home.freeEstimates}</p>
                 {/* Was clamped to 5rem against the full 1400px container. Inside
                     a 720px panel that overflowed the card on desktop. */}
                 <h2 className="mx-auto max-w-[20ch] text-[clamp(2rem,5vw,3.5rem)] text-ink">
-                  Ready to transform your living space?
+                  {t.home.ctaHeading}
                 </h2>
                 <p className="mx-auto mt-8 max-w-[46ch] text-[17px] leading-relaxed text-mute">
-                  Tell us what you are planning. We will come out, look at it properly, and give you
-                  a number you can rely on.
+                  {t.home.ctaBody}
                 </p>
                 <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-                  <Link href="/contact" className="btn btn-amber">
-                    Request a quote
+                  <Link href={contactHref} className="btn btn-amber">
+                    {t.requestQuote}
                   </Link>
                   <a href={BUSINESS.phoneHref} className="btn btn-ghost btn-tel">
                     {BUSINESS.phone}
@@ -431,7 +416,7 @@ export default function Home() {
         <ContactBlock />
       </main>
 
-      <SiteFooter />
+      <SiteFooter locale={locale} />
       <CallBar />
       <QuotePopup />
     </>
